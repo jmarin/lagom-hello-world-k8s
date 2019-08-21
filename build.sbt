@@ -7,6 +7,13 @@ scalaVersion in ThisBuild := "2.12.8"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
+lazy val dockerSettings = Seq(
+  Docker / maintainer := "Juan Marin Otero",
+  dockerBaseImage := "openjdk:jre-alpine",
+  dockerRepository := Some("jmarin"),
+  dockerExposedPorts ++= Seq(9000, 9001)
+)
+
 lazy val `lagom-hello-world-k8s` = (project in file("."))
   .aggregate(`lagom-hello-world-k8s-api`, `lagom-hello-world-k8s-impl`, `lagom-hello-world-k8s-stream-api`, `lagom-hello-world-k8s-stream-impl`)
 
@@ -44,7 +51,8 @@ lazy val `lagom-hello-world-k8s-stream-impl` = (project in file("lagom-hello-wor
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
-      scalaTest
+      scalaTest,
+      dockerSettings
     )
   )
   .dependsOn(`lagom-hello-world-k8s-stream-api`, `lagom-hello-world-k8s-api`)
