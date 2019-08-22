@@ -1,10 +1,11 @@
 import com.lightbend.lagom.core.LagomVersion
 
 organization in ThisBuild := "com.example"
+version in ThisBuild := "1.0-SNAPSHOT"
 
-version in ThisBuild ~= (_.replace('+', '-'))
+// version in ThisBuild ~= (_.replace('+', '-'))
 
-dynver in ThisBuild ~= (_.replace('+', '-'))
+// dynver in ThisBuild ~= (_.replace('+', '-'))
 
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.12.8"
