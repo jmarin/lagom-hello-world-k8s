@@ -1,7 +1,10 @@
-organization in ThisBuild := "com.example"
-version in ThisBuild := "1.0-SNAPSHOT"
-
 import com.lightbend.lagom.core.LagomVersion
+
+organization in ThisBuild := "com.example"
+
+version in ThisBuild ~= (_.replace('+', '-'))
+
+dynver in ThisBuild ~= (_.replace('+', '-'))
 
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.12.8"
@@ -12,9 +15,6 @@ val akkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-serv
 lazy val akkaKubernetes = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
 
 dockerBaseImage := "adoptopenjdk/openjdk8"
-
-version in ThisBuild ~= (_.replace('+', '-'))
-dynver in ThisBuild ~= (_.replace('+', '-'))
 
 lazy val `lagom-hello-world-k8s` = (project in file("."))
   .aggregate(
