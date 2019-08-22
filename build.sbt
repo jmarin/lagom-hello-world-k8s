@@ -12,9 +12,15 @@ scalaVersion in ThisBuild := "2.12.8"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 val akkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % LagomVersion.current
-lazy val akkaKubernetes = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
+val akkaKubernetes = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
+val postgres = "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
+val h2 = "com.h2database" % "h2" % "1.4.199"
 
 dockerBaseImage := "adoptopenjdk/openjdk8"
+
+dockerRepository := Some("jmarin")
+
+lagomCassandraEnabled in ThisBuild := false
 
 lazy val `lagom-hello-world-k8s` = (project in file("."))
   .aggregate(
@@ -37,13 +43,15 @@ lazy val `lagom-hello-world-k8s-impl` =
     .enablePlugins(LagomScala)
     .settings(
       libraryDependencies ++= Seq(
-        lagomScaladslPersistenceCassandra,
+        lagomScaladslPersistenceJdbc,
         lagomScaladslKafkaBroker,
         lagomScaladslTestKit,
         macwire,
         scalaTest,
         akkaDiscovery,
-        akkaKubernetes
+        akkaKubernetes,
+        postgres,
+        h2
       )
     )
     .settings(lagomForkedTestSettings)

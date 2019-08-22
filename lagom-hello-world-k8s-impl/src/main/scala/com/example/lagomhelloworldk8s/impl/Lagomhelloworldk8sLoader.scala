@@ -2,7 +2,6 @@ package com.example.lagomhelloworldk8s.impl
 
 import com.lightbend.lagom.scaladsl.api.ServiceLocator
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
-import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceComponents
 import com.lightbend.lagom.scaladsl.server._
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import play.api.libs.ws.ahc.AhcWSComponents
@@ -11,6 +10,8 @@ import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
 import com.softwaremill.macwire._
 import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
+import com.lightbend.lagom.scaladsl.persistence.jdbc.JdbcPersistenceComponents
+import play.api.db.HikariCPComponents
 
 class Lagomhelloworldk8sLoader extends LagomApplicationLoader {
 
@@ -25,7 +26,8 @@ class Lagomhelloworldk8sLoader extends LagomApplicationLoader {
 
 abstract class Lagomhelloworldk8sApplication(context: LagomApplicationContext)
     extends LagomApplication(context)
-    with CassandraPersistenceComponents
+    with JdbcPersistenceComponents
+    with HikariCPComponents
     with LagomKafkaComponents
     with AhcWSComponents {
 
