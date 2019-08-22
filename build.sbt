@@ -1,58 +1,70 @@
 organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
+import com.lightbend.lagom.core.LagomVersion
+
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.12.8"
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
+val akkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % LagomVersion.current
+lazy val akkaKubernetes = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
 
-lazy val dockerSettings = Seq(
-  Docker / maintainer := "Juan Marin Otero",
-  dockerBaseImage := "openjdk:jre-alpine",
-  dockerRepository := Some("jmarin"),
-  dockerExposedPorts ++= Seq(9000, 9001)
-)
+dockerBaseImage := "adoptopenjdk/openjdk8"
+
+version in ThisBuild ~= (_.replace('+', '-'))
+dynver in ThisBuild ~= (_.replace('+', '-'))
 
 lazy val `lagom-hello-world-k8s` = (project in file("."))
-  .aggregate(`lagom-hello-world-k8s-api`, `lagom-hello-world-k8s-impl`, `lagom-hello-world-k8s-stream-api`, `lagom-hello-world-k8s-stream-impl`)
-
-lazy val `lagom-hello-world-k8s-api` = (project in file("lagom-hello-world-k8s-api"))
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslApi
-    )
+  .aggregate(
+    `lagom-hello-world-k8s-api`,
+    `lagom-hello-world-k8s-impl`,
+    `lagom-hello-world-k8s-stream-api`,
+    `lagom-hello-world-k8s-stream-impl`
   )
 
-lazy val `lagom-hello-world-k8s-impl` = (project in file("lagom-hello-world-k8s-impl"))
-  .enablePlugins(LagomScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslPersistenceCassandra,
-      lagomScaladslKafkaBroker,
-      lagomScaladslTestKit,
-      macwire,
-      scalaTest
+lazy val `lagom-hello-world-k8s-api` =
+  (project in file("lagom-hello-world-k8s-api"))
+    .settings(
+      libraryDependencies ++= Seq(
+        lagomScaladslApi
+      )
     )
-  )
-  .settings(lagomForkedTestSettings)
-  .dependsOn(`lagom-hello-world-k8s-api`)
 
-lazy val `lagom-hello-world-k8s-stream-api` = (project in file("lagom-hello-world-k8s-stream-api"))
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslApi
+lazy val `lagom-hello-world-k8s-impl` =
+  (project in file("lagom-hello-world-k8s-impl"))
+    .enablePlugins(LagomScala)
+    .settings(
+      libraryDependencies ++= Seq(
+        lagomScaladslPersistenceCassandra,
+        lagomScaladslKafkaBroker,
+        lagomScaladslTestKit,
+        macwire,
+        scalaTest,
+        akkaDiscovery,
+        akkaKubernetes
+      )
     )
-  )
+    .settings(lagomForkedTestSettings)
+    .dependsOn(`lagom-hello-world-k8s-api`)
 
-lazy val `lagom-hello-world-k8s-stream-impl` = (project in file("lagom-hello-world-k8s-stream-impl"))
-  .enablePlugins(LagomScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslTestKit,
-      macwire,
-      scalaTest,
-      dockerSettings
+lazy val `lagom-hello-world-k8s-stream-api` =
+  (project in file("lagom-hello-world-k8s-stream-api"))
+    .settings(
+      libraryDependencies ++= Seq(
+        lagomScaladslApi
+      )
     )
-  )
-  .dependsOn(`lagom-hello-world-k8s-stream-api`, `lagom-hello-world-k8s-api`)
+
+lazy val `lagom-hello-world-k8s-stream-impl` =
+  (project in file("lagom-hello-world-k8s-stream-impl"))
+    .enablePlugins(LagomScala)
+    .settings(
+      libraryDependencies ++= Seq(
+        lagomScaladslTestKit,
+        macwire,
+        scalaTest
+      )
+    )
+    .dependsOn(`lagom-hello-world-k8s-stream-api`, `lagom-hello-world-k8s-api`)

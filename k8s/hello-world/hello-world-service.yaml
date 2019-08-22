@@ -3,6 +3,7 @@ kind: Deployment
 metadata: 
   name: hello-world-service
 spec: 
+  replicas: 3
   selector:
     matchLabels:
       app: hello-world-service
@@ -13,14 +14,16 @@ spec:
         app: hello-world-service
     spec:
       containers:
-        - name: hello-world-service
+      - name: hello-world-service
         image: "jmarin/hello-world-service:latest"
         env:
           - name: JAVA_OPTS
             value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
           - name: APPLICATION_SECRET
-            value: hello-world-service-secret
-            key: secret
+            valueFrom:
+              secretKeyRef:
+                name: hello-world-service-secret
+                key: secret
           - name: POSTGRESQL_URL
             value: "jdbc:postgresql://postgresql/shopping_cart"
           - name: POSTGRESQL_USERNAME
@@ -28,13 +31,33 @@ spec:
               secretKeyRef:
                 name: postgres-credentials
                 key: user
-           - name: POSTGRESQL_PASSWORD
+          - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: postgres-credentials
                 key: password
-           - name: KAFKA_SERVICE_NAME
-             value: "_clients._tcp.strimzi-kafka-brokers"
+          - name: KAFKA_SERVICE_NAME
+            value: "_clients._tcp.strimzi-kafka-brokers"
+          - name: REQUIRED_CONTACT_POINT_NR
+            value: "3"
+        ports:
+          - name: management
+            containerPort: 8558
+        readinessProbe:
+          httpGet:
+            path: "/ready"
+            port: management
+          periodSeconds: 10
+          failureThreshold: 10
+          initialDelaySeconds: 20
+        livenessProbe:
+          httpGet:
+            path: "/alive"
+            port: management
+          periodSeconds: 10
+          failureThreshold: 10
+          initialDelaySeconds: 20
+        
         resources:
           limits: 
             memory: 512Mi
