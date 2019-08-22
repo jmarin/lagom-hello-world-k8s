@@ -1,0 +1,57 @@
+apiVersion: "apps/v1"
+kind: Deployment
+metadata: 
+  name: hello-world-service
+spec: 
+  selector:
+    matchLabels:
+      app: hello-world-service
+
+  template:
+    metadata:
+      labels:
+        app: hello-world-service
+    spec:
+      containers:
+        - name: hello-world-service
+        image: "jmarin/hello-world-service:latest"
+        env:
+          - name: JAVA_OPTS
+            value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
+          - name: APPLICATION_SECRET
+            value: hello-world-service-secret
+            key: secret
+          - name: POSTGRESQL_URL
+            value: "jdbc:postgresql://postgresql/shopping_cart"
+          - name: POSTGRESQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres-credentials
+                key: user
+           - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-credentials
+                key: password
+           - name: KAFKA_SERVICE_NAME
+             value: "_clients._tcp.strimzi-kafka-brokers"
+        resources:
+          limits: 
+            memory: 512Mi
+          requests:
+            cpu: 0.25
+            memory: 512Mi
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-service
+spec: 
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9000
+  selector: 
+    app: hello-world-service
+  type: LoadBalancer
