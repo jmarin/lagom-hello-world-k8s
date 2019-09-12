@@ -1,7 +1,7 @@
 import com.lightbend.lagom.core.LagomVersion
 
 organization in ThisBuild := "com.example"
-version in ThisBuild := "1.0-SNAPSHOT"
+version in ThisBuild := "1.0.1-SNAPSHOT"
 
 // version in ThisBuild ~= (_.replace('+', '-'))
 

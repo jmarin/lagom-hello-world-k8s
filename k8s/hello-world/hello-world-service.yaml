@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: hello-world-service
-        image: "lagom-hello-world-k8s-impl:7-7abed733-20190822-0954"
+        image: "lagom-hello-world-k8s-impl:1.0.1-SNAPSHOT"
         env:
           - name: JAVA_OPTS
             value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
