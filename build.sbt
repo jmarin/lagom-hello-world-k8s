@@ -14,7 +14,7 @@ val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 val akkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % LagomVersion.current
 val akkaKubernetes = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
-val postgres = "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
+val postgres = "postgresql" % "postgresql" % "42.2.8"
 val h2 = "com.h2database" % "h2" % "1.4.199"
 
 dockerBaseImage := "adoptopenjdk/openjdk8"
