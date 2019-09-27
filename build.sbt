@@ -41,8 +41,12 @@ lazy val `lagom-hello-world-k8s-api` =
 
 lazy val `lagom-hello-world-k8s-impl` =
   (project in file("lagom-hello-world-k8s-impl"))
-    .enablePlugins(LagomScala)
+    .enablePlugins(LagomScala, Cinnamon)
     .settings(
+      // Enable Cinnamon during tests
+      cinnamon in test := true,
+      // Add a play secret to javaOptions in run in Test, so we can run Lagom forked
+      javaOptions in (Test, run) += "-Dplay.http.secret.key=x",
       libraryDependencies ++= Seq(
         lagomScaladslPersistenceJdbc,
         lagomScaladslKafkaBroker,
@@ -52,7 +56,10 @@ lazy val `lagom-hello-world-k8s-impl` =
         akkaDiscovery,
         akkaKubernetes,
         postgres,
-        h2
+        h2,
+        // Use Coda Hale Metrics and Lagom instrumentation
+        Cinnamon.library.cinnamonCHMetrics,
+        Cinnamon.library.cinnamonLagom
       )
     )
     .settings(lagomForkedTestSettings)
